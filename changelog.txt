@@ -1,1 +1,44 @@
-
+---------------------------------------------------------------------------------------------------
+Version: 1.1.10
+Date: 20. 01. 2022
+  Features:
+    - Radiation damage and radiation damage decay (from complete rework of Radioactive Contamination)
+    - Geiger counter sound is played when a radiation source is within 10 meters radius (can be turned off in settings)
+    - Alert sprite starts flashing when a radiation source is within 10 meters radius
+    - Hazmat suit which provides some shielding from radiation when worn (reduces damage taken of 80%)
+    - Shielded chest which provides complete shielding from any radioactive element contained inside of it
+    - Shielded tank which provides complete shielding from any radioactive fluids contained inside of it
+    - Show radiation levels on screen (can be toggled on or off via settings)
+  Info:
+    - Supported elements:
+        - Uranium Ore
+        - Yellow Cake
+        - Uranium hexafluoride
+        - Thorium Ore
+        - Deuterium
+        - Tritium
+        - Thorium-232
+        - Uranium-238
+        - Uranium-236
+        - Uranium-235
+        - Uranium-233
+        - Neptunium-239
+        - Neptunium-237
+        - Plutonium-239
+        - Plutonium-238
+        - Radium-226
+        - Radium-228
+        - Americium-241
+    - Radiation emission applies to:
+        - Ore patches
+        - Items in inventory
+        - Items in trash inventory
+        - Items on ground
+        - Items on transport belts
+        - items in containers
+        - Items in assembling machines
+        - fluids in pipes
+        - fluids in storage tanks
+    - Alert sprites:
+        - Yellow alert: geiger counter goes off, radioactive element within 10 meters radius no damage taken
+        - Red alert: geiger counter goes off, radioactive element within 10 meters radius and damage is taken

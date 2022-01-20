@@ -1,0 +1,17 @@
+{
+	"name": "osm-radioactivity",
+	"version": "1.1.10",
+	"title": "Radioactivity kills slowly",
+	"author": "OldSkoolMatt",
+	"factorio_version": "1.1",
+	"description": "Radioactivity is just like love...\nIT KILLS SLOWLY AND GIVES CANCER!",
+	"dependencies":
+	[
+		"base >= 1.1.0",
+		"osm-lib >= 1.1.17",
+		"(?) bobores",
+		"(?) bobplates",
+		"(?) angelsrefining",
+		"(?) Clowns-Nuclear"
+	]
+}
