@@ -1,17 +1,19 @@
 {
 	"name": "osm-radioactivity",
-	"version": "1.1.10",
-	"title": "Radioactivity kills slowly",
+	"version": "1.1.11",
+	"title": "Radioactivity Kills Slowly",
 	"author": "OldSkoolMatt",
+	"homepage": "https://mods.factorio.com/mod/osm-radioactivity",
 	"factorio_version": "1.1",
-	"description": "Radioactivity is just like love...\nIT KILLS SLOWLY AND GIVES CANCER!",
+	"description": "Radioactivity is just like love...\nKILLS SLOWLY AND GIVES CANCER!",
 	"dependencies":
 	[
 		"base >= 1.1.0",
 		"osm-lib >= 1.1.17",
-		"(?) bobores",
-		"(?) bobplates",
-		"(?) angelsrefining",
-		"(?) Clowns-Nuclear"
+		"? bobores",
+		"? bobplates",
+		"? angelsrefining",
+		"(?) Clowns-Nuclear",
+		"(?) Krastorio2"
 	]
 }

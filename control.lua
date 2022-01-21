@@ -19,6 +19,7 @@ local radioactive_fluids = OSM_table.fluids
 
 -- Setup local functions
 local get_player = OSM_local.get_player
+local get_radiation_resistance = OSM_local.get_radiation_resistance
 local total_round = OSM_local.total_round
 local print_geiger_value = OSM_local.print_geiger_value
 
@@ -162,12 +163,12 @@ local function calculate_damage(event)
 		if half_life > 100 then
 			half_life = 100
 		end
-		if half_life >= 0.1 and perceived_radiation >= 0.1 then
+		if half_life >= 0.1 then
 			if geiger_sound == true then
 				player.play_sound({path = "geiger-counter", position=character.position, volume_modifier = 0.5})
 			end
 			player.add_custom_alert(character, {type="virtual", name="nuclear-damage"}, {""}, false)
-			character.damage(half_life, "neutral", "radiation")
+			character.damage(half_life, "neutral", "radioactive")
 		end
 		set_half_life(player, half_life)
 	end
@@ -189,11 +190,10 @@ local function calculate_radiation(event)
 	if player and player.valid and player.character and player.character.valid then
 		local character = player.character
 		local radioactive_area = {left_top = {character.position.x -10, character.position.y -10}, right_bottom = {character.position.x +10, character.position.y +10}}
+		local radiation_resistance = get_radiation_resistance(player)
 		local radiation_data = {}
 		local radiation_exposure = 0
 		local radiation_level = 0
-
-		local armor = player.get_inventory(defines.inventory.character_armor)[1]
 
 		-- Inventory
 		for name, amount in pairs(character.get_inventory(1).get_contents()) do
@@ -396,16 +396,9 @@ local function calculate_radiation(event)
 		if radiation_level >= 0.001 then
 			
 			radiation_warning = true
-	
-			local armor = player.get_inventory(defines.inventory.character_armor)[1]
-			if armor.valid_for_read and armor.name == "hazmat-suit" then
-				perceived_radiation = radiation_level*0.20 -- TO BE MADE PROPERLY THIS LOOKS LIKE SHITE
-			else
-				perceived_radiation = radiation_level
-			end
-			
+			perceived_radiation = radiation_level*radiation_resistance
 			print_geiger_value(radiation_level, perceived_radiation, player)
-			radiation_exposure = radiation_level
+			radiation_exposure = perceived_radiation
 		else
 			radiation_warning = false
 		end

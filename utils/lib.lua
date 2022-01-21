@@ -53,7 +53,7 @@ local function print_perceived_value(radiation_level, player)
 	end
 end
 
-
+-- Print exposure and radiation levels
 function local_function.print_geiger_value(millibob_value, perceived_level, player)
 
 	local print_millibobs = settings.global["osm-rad-print-millibobs"]
@@ -65,6 +65,22 @@ function local_function.print_geiger_value(millibob_value, perceived_level, play
 	if print_perceived.value == true then
 		print_perceived_value(perceived_level, player)
 	end
+end
+
+-- Returns radiation resistance
+function local_function.get_radiation_resistance(player)
+
+	local armor = player.get_inventory(defines.inventory.character_armor)[1]
+	local radiation_resistance = 1
+
+	if armor.valid_for_read and armor.name then
+		for resistance_type, resistance in pairs(game.item_prototypes[armor.name].resistances) do
+			if resistance_type == "radioactive" and resistance.percent then
+				return radiation_resistance-resistance.percent
+			end
+		end
+	end
+	return radiation_resistance
 end
 
 return local_function
