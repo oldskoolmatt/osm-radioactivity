@@ -107,5 +107,14 @@ function local_function.damage_alert(player)
 		return player.add_custom_alert(character, {type="virtual", name="nuclear-damage"}, {""}, false)
 	end
 end
+
+-- Assign locale descriptions
+function local_function.make_description(type, prototype, prototype_name, radioactivity)
+	if type.name == prototype_name  then
+		prototype[prototype_name].localised_description = {"", "[font=default-semibold][color=#ffe6c0]Radioactivity:[/color][/font] "..radioactivity.." MilliBobs"}
+	elseif type.name == "infinite-"..prototype_name then
+		prototype["infinite-"..prototype_name].localised_description = {"", "[font=default-semibold][color=#ffe6c0]Radioactivity:[/color][/font] "..radioactivity.." MilliBobs"}
+	end
+end
 	
 return local_function

@@ -89,7 +89,7 @@ rad.items =
 	["used-up-thorium-plutonium-fuel-cell"] = rad_dep_th_pu_fc,
 	["used-up-deuterium-fuel-cell"] = rad_dep_deuterium_fc,
 	["used-up-deuterium-fuel-cell-2"] = rad_dep_deuterium_fc,
- 	["used-up-mox-fuel-cell"] = rad_dep_mox_fc
+ 	["used-up-mox-fuel-cell"] = rad_dep_mox_fc,
 
 	["uranium-hexafluoride"] = rad_uranium_hex,
 	["deuterium"] = rad_tritium,
