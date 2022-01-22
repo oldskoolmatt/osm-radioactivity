@@ -110,10 +110,22 @@ end
 
 -- Assign locale descriptions
 function local_function.make_description(type, prototype, prototype_name, radioactivity)
+	
+	local OSM_table = require("control-table")
+	local radioactive_ores = OSM_table.ores
+	local radioactive_items = OSM_table.items
+	local radioactive_fluids = OSM_table.fluids
+	
+	for radioactive_fluid, radioactivity in pairs(radioactive_fluids) do
+		radioactive_items[radioactive_fluid.."-barrel"] = radioactivity*50
+	end
+
+	local localised_description = {"", "[font=default-semibold][color=#ffe6c0]Radioactivity:[/color][/font] "..radioactivity.." MilliBobs"}
+	
 	if type.name == prototype_name  then
-		prototype[prototype_name].localised_description = {"", "[font=default-semibold][color=#ffe6c0]Radioactivity:[/color][/font] "..radioactivity.." MilliBobs"}
+		prototype[prototype_name].localised_description = localised_description
 	elseif type.name == "infinite-"..prototype_name then
-		prototype["infinite-"..prototype_name].localised_description = {"", "[font=default-semibold][color=#ffe6c0]Radioactivity:[/color][/font] "..radioactivity.." MilliBobs"}
+		prototype["infinite-"..prototype_name].localised_description = localised_description
 	end
 end
 	

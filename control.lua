@@ -23,6 +23,11 @@ local play_damage_alert = OSM_local.damage_alert
 -----------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------------------
 
+-- Assign radiation level to barrels
+for radioactive_fluid, radioactivity in pairs(radioactive_fluids) do
+	radioactive_items[radioactive_fluid.."-barrel"] = radioactivity*50
+end
+
 -- Get radiation level of ore patch
 local function get_resource_radioactivity(name, amount)
 
@@ -48,11 +53,6 @@ local function get_item_radioactivity(name, amount)
 	for item, radioactivity in pairs(radioactive_items) do
 		if item == name then
 			result = radioactivity * amount
-			if result ~= nil then
-				return result
-			end
-		elseif item == name.."-barrel" then
-			result = radioactivity * 50 * amount -- TO BE DONE PROPERLY
 			if result ~= nil then
 				return result
 			end

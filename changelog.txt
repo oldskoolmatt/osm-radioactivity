@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.13
+Date: 22. 01. 2022
+  Info:
+    - Added radiation values in item/fluid/entity tooltips
+  Bugfixes:
+    - Corrected a typo in a function
+---------------------------------------------------------------------------------------------------
 Version: 1.1.12
 Date: 22. 01. 2022
   Info:
@@ -23,10 +30,6 @@ Date: 20. 01. 2022
     - Supported elements:
         - Uranium Ore
         - Yellow Cake
-        - Uranium hexafluoride
-        - Thorium Ore
-        - Deuterium
-        - Tritium
         - Thorium-232
         - Uranium-238
         - Uranium-236
@@ -39,6 +42,10 @@ Date: 20. 01. 2022
         - Radium-226
         - Radium-228
         - Americium-241
+        - Uranium hexafluoride
+        - Thorium Ore
+        - Deuterium
+        - Tritium
     - Radiation emission applies to:
         - Ore patches
         - Items in inventory
