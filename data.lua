@@ -14,7 +14,7 @@ local radioactive_prototypes =
 }
 local prototypes =
 {
-	data.raw.type,
+	data.raw.resource,
 	data.raw.item,
 	data.raw.fluid
 }
