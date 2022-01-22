@@ -3,13 +3,14 @@
 ---------------------
 
 -- Radiation values
-local rad_uranium_ore = 0.02		-- Ore
-local rad_thorium_ore = 0.01		-- Ore
+local rad_uranium_ore = 0.002		-- Ore
+local rad_thorium_ore = 0.001		-- Ore
 --------------------------------------
 local rad_yellow_cake = 0.2			-- Item
 local rad_uranium_238 = 0.5			-- Item
 local rad_uranium_236 = 12			-- Item
 local rad_uranium_235 = 3			-- Item
+local rad_uranium_234 = 10			-- Item
 local rad_uranium_233 = 20			-- Item
 local rad_thorium_232 = 0.15		-- Item
 local rad_neptunium_239 = 25		-- Item
@@ -29,7 +30,7 @@ local rad_thorium_fc = 6							-- Item
 local rad_th_pu_fc = 23								-- Item
 local rad_deuterium_fc = 2							-- Item
 local rad_deuterium_2_fc = 3						-- Item
--- rad_dep_mox_fc									-- Item
+local rad_dep_mox_fc = 50							-- Item
 
 -- local rad_mox_fc = 								-- Item
 local rad_dep_uranium_fc = rad_uranium_fc*2			-- Item
@@ -37,7 +38,7 @@ local rad_dep_plutonium_fc = rad_plutonium_fc*2		-- Item
 local rad_dep_thorium_fc = rad_thorium_fc*2			-- Item
 local rad_dep_th_pu_fc = rad_th_pu_fc*2				-- Item
 local rad_dep_deuterium_fc = 0						-- Item
--- local rad_dep_mox_fc =							-- Item
+local rad_dep_mox_fc = rad_dep_mox_fc*2				-- Item
 --------------------------------------
 local rad_uranium_hex = 0.2			-- Fluid
 local rad_deuterium =  0.01			-- Fluid
@@ -64,6 +65,7 @@ rad.items =
 	["uranium-238"] = rad_uranium_238,
 	["uranium-236"] = rad_uranium_236,
 	["uranium-235"] = rad_uranium_235,
+	["uranium-234"] = rad_uranium_234,
 	["uranium-233"] = rad_uranium_233,
 	["thorium-232"] = rad_thorium_232,
 	["neptunium-239"] = rad_neptunium_239,
@@ -80,14 +82,14 @@ rad.items =
 	["thorium-plutonium-fuel-cell"] = rad_th_pu_fc,
 	["deuterium-fuel-cell"] = rad_deuterium_fc,
 	["deuterium-fuel-cell-2"] = rad_deuterium_2_fc,
--- 	["mox-fuel-cell"] = rad_mox_fc,
+ 	["mox-fuel-cell"] = rad_mox_fc,
 	["used-up-uranium-fuel-cell"] = rad_dep_uranium_fc,
 	["used-up-plutonium-fuel-cell"] = rad_dep_plutonium_fc,
 	["used-up-thorium-fuel-cell"] = rad_dep_thorium_fc,
 	["used-up-thorium-plutonium-fuel-cell"] = rad_dep_th_pu_fc,
 	["used-up-deuterium-fuel-cell"] = rad_dep_deuterium_fc,
 	["used-up-deuterium-fuel-cell-2"] = rad_dep_deuterium_fc,
--- 	["used-up-mox-fuel-cell"] = rad_dep_mox_fc
+ 	["used-up-mox-fuel-cell"] = rad_dep_mox_fc
 
 	["uranium-hexafluoride"] = rad_uranium_hex,
 	["deuterium"] = rad_tritium,

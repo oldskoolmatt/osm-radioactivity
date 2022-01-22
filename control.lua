@@ -6,12 +6,6 @@
 local OSM_local = require("utils.lib")
 local OSM_table = require("control-table")
 
--- Setup local settings
-local geiger_sound = settings.global["osm-rad-geiger-sound"].value
-script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
-	geiger_sound = settings.global["osm-rad-geiger-sound"].value
-end)
-
 -- Setup values host
 local radioactive_ores = OSM_table.ores
 local radioactive_items = OSM_table.items
@@ -22,15 +16,17 @@ local get_player = OSM_local.get_player
 local get_radiation_resistance = OSM_local.get_radiation_resistance
 local total_round = OSM_local.total_round
 local print_geiger_value = OSM_local.print_geiger_value
+local play_geiger_sound = OSM_local.play_geiger_sound
+local play_warning_alert = OSM_local.warning_alert
+local play_damage_alert = OSM_local.damage_alert
 
 -----------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------------------
-local ore_divider = 0.00001
-local fluid_divider = 0.001
 
 -- Get radiation level of ore patch
 local function get_resource_radioactivity(name, amount)
-	
+
+	local ore_divider = 0.0001
 	local result = nil
 
 	for ore, radioactivity in pairs(radioactive_ores) do
@@ -56,7 +52,7 @@ local function get_item_radioactivity(name, amount)
 				return result
 			end
 		elseif item == name.."-barrel" then
-			result = radioactivity * 50 * amount
+			result = radioactivity * 50 * amount -- TO BE DONE PROPERLY
 			if result ~= nil then
 				return result
 			end
@@ -67,7 +63,8 @@ end
 
 -- Get radiation level of fluid
 local function get_fluid_radioactivity(name, amount)
-	
+
+	local fluid_divider = 0.001
 	local result = nil
 
 	for fluid, radioactivity in pairs(radioactive_fluids) do
@@ -87,7 +84,7 @@ end
 -- Set local variables
 local player_half_life = {}
 local player_radiation_exposure = {}
-local perceived_radiation = {}
+local radiation_warning = 0
 
 -- Set radiation exposure
 local function set_radiation_exposure(player, radiation_exposure)
@@ -133,9 +130,6 @@ local function get_half_life(player)
 	end
 end
 
------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------
-
 -- Calculate distance
 local function calculate_distance(player_pos, entity_pos)
 	local distance = math.sqrt((player_pos.x - entity_pos.x)^2 + (player_pos.y - entity_pos.y)^2)
@@ -149,28 +143,33 @@ end
 -- Calculate damage
 local function calculate_damage(event)
 	local player = get_player()
-	local character = player.character
-		
-	if character then
-		local half_life = {}
-		local radiation_exposure = {}
 
-		radiation_exposure = get_radiation_exposure(player)
-		half_life = get_half_life(player)	
-		if half_life < radiation_exposure then
-			half_life = radiation_exposure
-		end
-		if half_life > 100 then
-			half_life = 100
-		end
-		if half_life >= 0.1 then
-			if geiger_sound == true then
-				player.play_sound({path = "geiger-counter", position=character.position, volume_modifier = 0.5})
+	if player and player.valid and player.character and player.character.valid then
+		local character = player.character
+		
+		if character then
+			local half_life = {}
+			local radiation_exposure = {}
+			local radiation_resistance = get_radiation_resistance(player)
+
+			radiation_exposure = get_radiation_exposure(player)
+			half_life = get_half_life(player)	
+			if half_life < radiation_exposure then
+				half_life = radiation_exposure
 			end
-			player.add_custom_alert(character, {type="virtual", name="nuclear-damage"}, {""}, false)
-			character.damage(half_life, "neutral", "radioactive")
+			if half_life > 100 then
+				half_life = 100
+			end
+			
+			radiation_exposure = (half_life-radiation_resistance.decrease)*radiation_resistance.percent
+
+			if half_life > 0.19 and radiation_exposure > 0.19 then
+				play_geiger_sound(player)
+				play_damage_alert(player)
+				character.damage(half_life, "neutral", "radioactive")
+			end
+			set_half_life(player, half_life)
 		end
-		set_half_life(player, half_life)
 	end
 end
 
@@ -190,10 +189,9 @@ local function calculate_radiation(event)
 	if player and player.valid and player.character and player.character.valid then
 		local character = player.character
 		local radioactive_area = {left_top = {character.position.x -10, character.position.y -10}, right_bottom = {character.position.x +10, character.position.y +10}}
-		local radiation_resistance = get_radiation_resistance(player)
 		local radiation_data = {}
-		local radiation_exposure = 0
 		local radiation_level = 0
+		radiation_resistance = get_radiation_resistance(player)
 
 		-- Inventory
 		for name, amount in pairs(character.get_inventory(1).get_contents()) do
@@ -394,15 +392,15 @@ local function calculate_radiation(event)
 
 		-- Give cancer to player
 		if radiation_level >= 0.001 then
-			
-			radiation_warning = true
-			perceived_radiation = radiation_level*radiation_resistance
-			print_geiger_value(radiation_level, perceived_radiation, player)
-			radiation_exposure = perceived_radiation
+			radiation_warning = radiation_level
+			radiation_resistance = (radiation_level-radiation_resistance.decrease)*radiation_resistance.percent
+			if radiation_warning >= 0.01 then
+				print_geiger_value(radiation_level, radiation_resistance, player)
+			end
 		else
-			radiation_warning = false
+			radiation_warning = 0
 		end
-		set_radiation_exposure(player, radiation_exposure/2)
+		set_radiation_exposure(player, radiation_level)
 	else
 		set_radiation_exposure(player, nil)
 		set_half_life(player, nil)
@@ -415,14 +413,12 @@ end
 -- Initialise event handler
 script.on_event({defines.events.on_tick}, function(event)
 	if event.tick % 30 == 0 then
-		if radiation_warning == true then
-			local player = get_player()
-			if player and player.valid and player.character and player.character.valid then
-				local character = player.character
-				player.add_custom_alert(character, {type="virtual", name="nuclear-alert"}, {""}, false)
-				if geiger_sound == true then
-					player.play_sound({path = "geiger-counter", position=character.position, volume_modifier = 0.5})
-				end
+		local player = get_player()
+		if player and player.valid and player.character and player.character.valid then
+			local character = player.character
+			if radiation_warning >= 0.001 then
+				play_warning_alert(player)
+				play_geiger_sound(player)
 			end
 		end
 	end
