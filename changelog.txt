@@ -1,4 +1,24 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.20
+Date: 08. 02. 2022
+  Changes:
+    - Exposure radius to radioactive source is now configurable
+  Info:
+    - Complete code structure rework
+    - List of radioactive objects are now logged in both data stage and control stage
+    - Fuel cells radiation values are generated based on ingredients
+    - Used up fuel cells radiation values are generated based on products
+    - Implemented logging
+  Bugfixes:
+    - Radiation damage persists after loading game
+    - Radioactive items in corpses cause radiation damage
+---------------------------------------------------------------------------------------------------
+Version: 1.1.14
+Date: 22. 01. 2022
+  Info:
+    - Added support for deadlock's stacked items
+    - Added locales for tooltips and messages
+---------------------------------------------------------------------------------------------------
 Version: 1.1.13
 Date: 22. 01. 2022
   Info:
@@ -27,29 +47,16 @@ Date: 20. 01. 2022
     - Shielded tank which provides complete shielding from any radioactive fluids contained inside of it
     - Show radiation levels on screen (can be toggled on or off via settings)
   Info:
-    - Supported elements:
-        - Uranium Ore
-        - Yellow Cake
-        - Thorium-232
-        - Uranium-238
-        - Uranium-236
-        - Uranium-235
-        - Uranium-233
-        - Neptunium-239
-        - Neptunium-237
-        - Plutonium-239
-        - Plutonium-238
-        - Radium-226
-        - Radium-228
-        - Americium-241
-        - Uranium hexafluoride
-        - Thorium Ore
-        - Deuterium
-        - Tritium
+    - Supports:
+        - Bob mods
+        - Angels mods
+        - MadClown nuclear
+        - Krastorio
     - Radiation emission applies to:
         - Ore patches
         - Items in inventory
         - Items in trash inventory
+        - Items in corpses
         - Items on ground
         - Items on transport belts
         - items in containers

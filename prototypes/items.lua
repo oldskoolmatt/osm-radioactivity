@@ -10,7 +10,7 @@ local shielded_chest =
 	icon_size = 64,
 	icon_mipmaps = 4,
 	subgroup = "storage",
-	order = "a[items]-a[shielded-chest]",
+	order = "a[items]-d[shielded-chest]",
 	place_result = "shielded-chest",
 	stack_size = 50
 }	data:extend({shielded_chest})
@@ -23,7 +23,7 @@ local shielded_tank =
 	icon_size = 64,
 	icon_mipmaps = 4,
 	subgroup = "storage",
-	order = "a[items]-a[shielded-tank]",
+	order = "b[items]-e[shielded-tank]",
 	place_result = "shielded-tank",
 	stack_size = 50
 }	data:extend({shielded_tank})

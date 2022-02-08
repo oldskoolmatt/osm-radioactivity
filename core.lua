@@ -2,9 +2,8 @@
 ---- data.lua ----
 ------------------
 
-local damage_type = data.raw["damage-type"]
-
 -- Radiation damage
+local damage_type = data.raw["damage-type"]
 if not damage_type["radioactive"] then
 	local damage =
 	{
