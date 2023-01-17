@@ -4,18 +4,17 @@
 
 local hit_effects = require("__base__.prototypes.entity.hit-effects")
 
------------------------------------------------------------------------------------------------------------------------
--- Shielded chest is based on the sprite from void chest + [https://mods.factorio.com/mod/VoidChestPlus] --------------
+-- Shielded chest is based on void chest+ sprites [https://mods.factorio.com/mod/VoidChestPlus]
 local shielded_chest =
 {
 	type = "container",
-	name = "shielded-chest",
+	name = "osm-rks-shielded-chest",
 	icon = "__osm-radioactivity__/graphics/icons/shielded-chest.png",
 	icon_size = 64,
 	icon_mipmaps = 4,
 	order = "a[items]-d[shielded-chest]",
 	flags = {"placeable-neutral", "player-creation", "not-rotatable"},
-	minable = {mining_time = 0.1, result = "shielded-chest"},
+	minable = {mining_time = 0.1, result = "osm-rks-shielded-chest"},
 	max_health = 100,
 	corpse = "iron-chest-remnants",
 	dying_explosion = "iron-chest-explosion",
@@ -71,31 +70,28 @@ local shielded_chest =
 	circuit_connector_sprites = circuit_connector_definitions["chest"].sprites,
 	circuit_wire_max_distance = default_circuit_wire_max_distance
 }	data:extend({shielded_chest})
------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------
 
------------------------------------------------------------------------------------------------------------------------
--- shamelessly stolen from fluid must flow [https://mods.factorio.com/mod/FluidMustFlow] ------------------------------
+-- Shielded tank is based on fluid must flow end duct sprite [https://mods.factorio.com/mod/FluidMustFlow]
+local connector_template =
+{
+	{ variation = 26, main_offset = util.by_pixel(0, -3), shadow_offset = util.by_pixel(2, -3), show_shadow = true },
+	{ variation = 26, main_offset = util.by_pixel(0, 0), shadow_offset = util.by_pixel(2, 0), show_shadow = true },
+	{ variation = 2, main_offset = util.by_pixel(0, 3), shadow_offset = util.by_pixel(2, 3), show_shadow = true },
+	{ variation = 26, main_offset = util.by_pixel(0, 0), shadow_offset = util.by_pixel(2, 0), show_shadow = true },
+}
 
-local circuit_wire_connection = circuit_connector_definitions.create(universal_connector_template, {
-  { variation = 26, main_offset = util.by_pixel(0, -3), shadow_offset = util.by_pixel(2, -3), show_shadow = true },
-  { variation = 26, main_offset = util.by_pixel(0, 0), shadow_offset = util.by_pixel(2, 0), show_shadow = true },
-  { variation = 2, main_offset = util.by_pixel(0, 3), shadow_offset = util.by_pixel(2, 3), show_shadow = true },
-  { variation = 26, main_offset = util.by_pixel(0, 0), shadow_offset = util.by_pixel(2, 0), show_shadow = true },
-})
+local circuit_wire_connection = circuit_connector_definitions.create(universal_connector_template, connector_template)
 
------------------------------------------------------------------------------------------------------------------------
--- Shielded tank is based on the end duct sprite from fluid must flow -------------------------------------------------
 local shielded_tank =
 {
 	type = "storage-tank",
-	name = "shielded-tank",
+	name = "osm-rks-shielded-tank",
 	icon = "__osm-radioactivity__/graphics/icons/shielded-tank.png",
 	icon_size = 64,
 	icon_mipmaps = 4,
 	order = "b[items]-e[shielded-tank]",
 	flags = {"placeable-player", "player-creation", "not-rotatable"},
-	minable = {mining_time = 0.2, result = "shielded-tank"},
+	minable = {mining_time = 0.2, result = "osm-rks-shielded-tank"},
 	max_health = 200,
 	corpse = "small-remnants",
 	collision_box = {{-0.3, -0.3}, {0.3, 0.3}},

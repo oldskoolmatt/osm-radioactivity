@@ -3,363 +3,222 @@
 ------------------------------
 
 -- Setup function host
-local local_function = {}
+local RKS = {}
 
--- Returns total radiation level rounded up [2 decimals]
-function local_function.get_radiation_level(table)
-	local sum = 0
-	local power = 10^2
-	for _, v in pairs(table) do
-		sum = sum+v
+-- Check if ingredient/result is candidate for being radioactive
+function RKS.prototype_is_candidate(prototype)
+
+	local prototype_is_allowed = OSM.RKS.utils.prototype_is_allowed
+
+	--Allowed
+	local dictionary =
+	{
+		"radium",
+		"thorium",
+		"uranium",
+		"plutonium",
+		"americium",
+		"neptunium",
+		"protactinium",
+		"polonium",
+		"caesium",
+		"iodine",
+		"strontium",
+		"zinc",
+		"cobalt",
+		"tritium",
+		"technetium",
+		"californium",
+		"MOX",
+		"mox",
+		"mixed-oxide",
+		"radioactive",
+		"uranyl",
+		"diuranate",
+		"nuclear",
+		"atomic",
+		"hexafluoride",
+		"yellowcake",
+		"purex",
+		"truex",
+		"diamex",
+		"sanex",
+		"unex",
+		"radiothermal",
+	}
+
+	-- Check if prototype type is allowed
+	if prototype_is_allowed(prototype) then
+
+		-- Check if prototype name is candidate
+		for _, word in pairs(dictionary) do
+			if string.find(prototype.name, word, 1, true) then return true end
+		end
 	end
-	return math.floor(sum*power)/power
 end
 
--- Returns half-life rounded up [2 decimals]
-function local_function.get_half_life(half_life)
-	local half_life = half_life/2
-	local power = 10^2
-	return math.floor(half_life*power)/power
-end
+function RKS.prototype_is_allowed(prototype)
 
--- Print exposure and radiation levels
-function local_function.print_geiger_value(radiation_level, exposure_level, player)
+	-- not allowed
+	local dictionary =
+	{
+		"warhead",
+		"bomb",
+		"rocket",
+		"rounds",
+		"grenade",
+		"shell",
+		"bullet",
+		"shotgun",
+		"turret",
+		"breeder-reactor",
+		"nuclear-reactor",
+		"centrifuge",
+	}
+
+	-- not allowed
+	local types =
+	{
+		"ammo",
+		"land-mine",
+		"gun",
+		"capsule",
+		"ammo-turret",
+		"electric-turret",
+		"combat-robot",
+	}
+
+	-- Check from type
+	if types[prototype.type] then return false end
+
+	-- Check from name
+	for _, word in pairs(dictionary) do
+		if string.find(prototype.name, word, 1, true) then return false end
+	end
 	
-	if not radiation_level or radiation_level <= 0 then return end
-	if not exposure_level or exposure_level <= 0 then exposure_level = 0 end
+	return true
+end
 
-	local print_millibobs = settings.global["osm-rad-print-millibobs"].value
-
-	-- Returns radiation level and exposure level on screen
-	if print_millibobs == true then
-
-		local radiation = string.format("%.2f", radiation_level)
-		local exposure = string.format("%.2f", exposure_level)
-
-		if radiation_level < 0.1 then
-			radiation = "[color=#27c43c]"..radiation.."[/color]" -- green
-		elseif radiation_level >= 0.1 and radiation_level <= 0.19 then
-			radiation = "[color=#ffc500]"..radiation.."[/color]" -- yellow
-		elseif radiation_level >= 0.2 then
-			radiation = "[color=#ff392f]"..radiation.."[/color]" -- red
+-- Get radiation table index
+function RKS.get_radiation_index(radiation_table)
+	local count = 0
+	for _, index in pairs(radiation_table) do
+		for _ in pairs(index) do
+			count = count+1
 		end
+	end
+	return count
+end
 
-		if exposure_level < 0.1 then
-			exposure = "[color=#27c43c]"..exposure.."[/color]" -- green
-		elseif exposure_level >= 0.1 and exposure_level <= 0.19 then
-			exposure = "[color=#ffc500]"..exposure.."[/color]" -- yellow
-		elseif exposure_level >= 0.2 then
-			exposure = "[color=#ff392f]"..exposure.."[/color]" -- red
-		end
-		player.print({"", {"string-name.osm-rad-radiation-level"}, ": ", radiation})
-		player.print({"", "[color=#e5a4e1]", {"string-name.osm-rad-exposure-level"}, ": [/color]", exposure})
+-- Checks if radiation value can be edited	
+function RKS.value_can_be_edited(name)
+	if not OSM.RKS.values.items[name] and not OSM.RKS.values.fluids[name] then
+		return true
 	end
 end
 
--- Generate fuel cell values [data.lua]
-function local_function.data_get_fuel_cell_value(prototype_table, OSM_local)
+-- Returns total radiation level nicely rounded up
+function RKS.finalise_radiation_table(radiation_table, game_data)
+	
+	local function round_up(radioactivity)
 
-	local index = {}
-
-	for _, recipe in pairs(data.raw.recipe) do
-
-		local recipe_name = recipe.name
-		local ingredients_index = {}
-		local result_index = {}
-		local fuel_cell_radioactivity = {}
-		local ingredient_amount = {}
-		local result_name = {}
-		local result_count = {}
-		local ingredients_index = {}
-		local fuel_cell_radioactivity = {}
-		local ingredient_name = {}
-
-		-- Get recipe difficulty
-		if recipe.normal then recipe = recipe.normal end
-		if recipe.expensive then recipe = recipe.expensive end
+		local function truncate(radioactivity, power)
+			power = 10^power
+			return math.floor(radioactivity*power)/power
+		end
 		
-		-- look for fuel cells
-		if recipe.result then
-			for fuel_cell, _ in pairs(prototype_table.fuel_cells) do
-				if recipe.result == fuel_cell then
+		radioactivity = truncate(radioactivity, 4)
 
-					local result_count = recipe.result_count or 1
-	
-					for _, ingredient in pairs(recipe.ingredients) do
-						for radioactive_item, radioactivity in pairs (prototype_table.items) do
-							if ingredient.name == radioactive_item or ingredient[1] == radioactive_item then
-								
-								local ingredient_amount = {}
-								
-								if ingredient.amount then ingredient_amount = ingredient.amount elseif ingredient[2] then ingredient_amount = ingredient[2] end
-								ingredients_index[radioactive_item] = radioactivity*ingredient_amount/result_count
-							end
-						end
-						for radioactive_fluid, radioactivity in pairs (prototype_table.fluids) do
-							if ingredient.name == radioactive_fluid or ingredient[1] == radioactive_fluid then
-								
-								local ingredient_amount = {}
-								
-								if ingredient.amount then ingredient_amount = ingredient.amount elseif ingredient[2] then ingredient_amount = ingredient[2] end
-								ingredients_index[radioactive_fluid] = radioactivity*ingredient_amount/result_count
-							end
-						end
-					end
-	
-					fuel_cell_radioactivity = OSM_local.get_radiation_level(ingredients_index)
+		local count = 1
+		local last_decimal = 0
 
-					if not index[fuel_cell] then
-						index[fuel_cell] = fuel_cell_radioactivity
-					elseif index[fuel_cell] <= fuel_cell_radioactivity then
-						index[fuel_cell] = fuel_cell_radioactivity
-					end
-				end
-			end
+		local length = #string.match(tostring(radioactivity), ".(.*)")
 
-		elseif recipe.results then
-			for _, result in pairs(recipe.results) do
-				
-				if result.name then
-					result_name = result.name
-				elseif result[1] then
-					result_name = result[1]
-				end
-				if result.amount then
-					result_count = result.amount
-				elseif result[2] then
-					result_count = result[2]
-				end
-				for fuel_cell, _ in pairs(prototype_table.fuel_cells) do
-					if result_name == fuel_cell then
-						for _, ingredient in pairs(recipe.ingredients) do
-							for radioactive_item, radioactivity in pairs (prototype_table.items) do
-								if ingredient.name == radioactive_item or ingredient[1] == radioactive_item then
-
-									local ingredient_amount = {}
-
-									if ingredient.amount then ingredient_amount = ingredient.amount elseif ingredient[2] then ingredient_amount = ingredient[2] end
-									ingredients_index[radioactive_item] = radioactivity*ingredient_amount/result_count
-								end
-							end
-							for radioactive_fluid, radioactivity in pairs (prototype_table.fluids) do
-								if ingredient.name == radioactive_fluid or ingredient[1] == radioactive_fluid then
-								
-									local ingredient_amount = {}
-								
-									if ingredient.amount then ingredient_amount = ingredient.amount elseif ingredient[2] then ingredient_amount = ingredient[2] end
-									ingredients_index[radioactive_fluid] = radioactivity*ingredient_amount/result_count
-								end
-							end
-						end
-						
-						fuel_cell_radioactivity = OSM_local.get_radiation_level(ingredients_index)
+		if length > 4 then
+			last_decimal = tonumber(string.sub(tostring(radioactivity), -1))
+			if last_decimal >= 5 then radioactivity = radioactivity+0.001 end
+		end
 		
-						if not index[fuel_cell] then
-							index[fuel_cell] = fuel_cell_radioactivity
-						elseif index[fuel_cell] <= fuel_cell_radioactivity then
-							index[fuel_cell] = fuel_cell_radioactivity
-						end
-					end
-				end
-			end
+		if not radioactivity or radioactivity == 0 then return 0 end
+		
+		if radioactivity >= 10 or (radioactivity < 10 and radioactivity >= 1) then
+			return truncate(radioactivity, 3)/count
 		end
 
-		-- look for spent fuel cells
-		for _, ingredient in pairs(recipe.ingredients) do
-			for fuel_cell, _ in pairs(prototype_table.fuel_cells) do
-
-				if ingredient.name then ingredient_name = ingredient.name elseif ingredient[1] then ingredient_name = ingredient[1] end
-				if ingredient.amount then ingredient_amount = ingredient.amount elseif ingredient[2] then ingredient_amount = ingredient[2] end
-
-				if ingredient_name == "used-up-"..fuel_cell then
-					
-					fuel_cell = "used-up-"..fuel_cell
-
-					if recipe.result then
-
-						local result_count = recipe.result_count or 1
-
-						for radioactive_item, radioactivity in pairs (prototype_table.items) do
-							if result == radioactive_item then
-								result_index[radioactive_item] = radioactivity*result_count/ingredient_amount
-							end
-						end
-		
-						fuel_cell_radioactivity = OSM_local.get_radiation_level(result_index)
-
-						if not index[fuel_cell] then
-							index[fuel_cell] = fuel_cell_radioactivity
-						elseif index[fuel_cell] <= fuel_cell_radioactivity then
-							index[fuel_cell] = fuel_cell_radioactivity
-						end
-
-					elseif recipe.results then
-						for _, result in pairs(recipe.results) do
-							
-							if result.name then
-								result_name = result.name
-							elseif result[1] then
-								result_name = result[1]
-							end
-							if result.amount then
-								result_count = result.amount
-							elseif result[2] then
-								result_count = result[2]
-							end
-
-							for radioactive_item, radioactivity in pairs (prototype_table.items) do
-								if result_name == radioactive_item then
-									result_index[radioactive_item] = radioactivity*result_count/ingredient_amount
-								end
-							end
-							for radioactive_fluid, radioactivity in pairs (prototype_table.fluids) do
-								if result_name == radioactive_fluid then
-									result_index[radioactive_fluid] = radioactivity*result_count/ingredient_amount
-								end
-							end
-
-							fuel_cell_radioactivity = OSM_local.get_radiation_level(result_index)
-								
-							if not index[fuel_cell] then
-								index[fuel_cell] = fuel_cell_radioactivity
-							elseif index[fuel_cell] <= fuel_cell_radioactivity then
-								index[fuel_cell] = fuel_cell_radioactivity
-							end
-						end
-					end
-				end
+		if radioactivity < 10 then
+			::retry::
+			radioactivity = radioactivity*10
+			count = count*10
+			if radioactivity >= 10 then
+				return truncate(radioactivity/count, 3)
 			end
+			goto retry
 		end
 	end
-	for fuel_cell, radioactivity in pairs(index) do
-		prototype_table.items[fuel_cell] = radioactivity
+
+	for ore, radioactivity in pairs(radiation_table.ore) do
+		if not radioactivity or radioactivity == 0 then
+			radiation_table.ore[ore] = nil
+		else
+			radiation_table.ore[ore] = round_up(radioactivity)
+		end
 	end
-	return prototype_table
+
+	for item, radioactivity in pairs(radiation_table.item) do
+		if not radioactivity or radioactivity == 0 then
+			radiation_table.item[item] = nil
+		else
+			radiation_table.item[item] = round_up(radioactivity)
+		end
+	end
+
+	for fluid, radioactivity in pairs(radiation_table.fluid) do
+		if not radioactivity or radioactivity == 0 then
+			radiation_table.fluid[fluid] = nil
+		else
+			radiation_table.fluid[fluid] = round_up(radioactivity)
+		end
+	end
+	
+	for entity, radioactivity in pairs(radiation_table.entity) do
+		if not radioactivity or radioactivity == 0 then
+			radiation_table.entity[entity] = nil
+		else
+			radiation_table.entity[entity] = round_up(radioactivity)
+		end
+	end
+
+	return radiation_table
 end
 
--- Generate fuel cell values [control.lua]
-function local_function.control_get_fuel_cell_value(prototype_table, OSM_local)
+-- Make description tooltip 
+function RKS.make_description(prototype)
 
-	local index = {}
+	local tooltip = {""}
 
-	for _, recipe in pairs(recipe_index) do
+	-- Resources
+	if prototype.type == "resource" then
+		tooltip = {"", "[img=osm-rks-tooltip-radioactive] ", "[font=default-semibold][color=yellow]", {"string-name.osm-resource-tooltip"}, "[/color][/font]"}
 
-		local recipe_name = recipe.name
-		local ingredients_index = {}
-		local result_index = {}
-		local fuel_cell_radioactivity = {}
-		local ingredient_amount = {}
-		local result_name = {}
-		local result_count = {}
-		local ingredients_index = {}
-		local fuel_cell_radioactivity = {}
-		local ingredient_name = {}
-		
-		-- look for fuel cells
-		if recipe.products then
-			for _, result in pairs(recipe.products) do
+	-- Items
+	elseif OSM.data.item[prototype.type] then
+		tooltip = {"", "[img=osm-rks-tooltip-radioactive] ", "[font=default-semibold][color=yellow]", {"string-name.osm-item-tooltip"}, "[/color][/font]"}
 
-				if result.name then
-					result_name = result.name
-				elseif result[1] then
-					result_name = result[1]
-				end
-				if result.amount then
-					result_count = result.amount
-				elseif result[2] then
-					result_count = result[2]
-				end
-				for fuel_cell, _ in pairs(prototype_table.fuel_cells) do
-					if result_name == fuel_cell then
-						if not index[fuel_cell] then index[fuel_cell] = 0 end
-						for _, ingredient in pairs(recipe.ingredients) do
-							for radioactive_item, radioactivity in pairs (prototype_table.items) do
-								if ingredient.name == radioactive_item or ingredient[1] == radioactive_item then
+	-- Fluids
+	elseif prototype.type == "fluid" then
+		tooltip = {"", "[img=osm-rks-tooltip-radioactive] ", "[font=default-semibold][color=yellow]", {"string-name.osm-fluid-tooltip"}, "[/color][/font]"}
 
-									local ingredient_amount = {}
-
-									if ingredient.amount then ingredient_amount = ingredient.amount elseif ingredient[2] then ingredient_amount = ingredient[2] end
-									ingredients_index[radioactive_item] = radioactivity*ingredient_amount/result_count
-								end
-							end
-							for radioactive_fluid, radioactivity in pairs (prototype_table.fluids) do
-								if ingredient.name == radioactive_fluid or ingredient[1] == radioactive_fluid then
-								
-									local ingredient_amount = {}
-								
-									if ingredient.amount then ingredient_amount = ingredient.amount elseif ingredient[2] then ingredient_amount = ingredient[2] end
-									ingredients_index[radioactive_fluid] = radioactivity*ingredient_amount/result_count
-								end
-							end
-						end
-	
-						fuel_cell_radioactivity = OSM_local.get_radiation_level(ingredients_index)
-	
-						if not index[fuel_cell] then
-							index[fuel_cell] = fuel_cell_radioactivity
-						elseif index[fuel_cell] <= fuel_cell_radioactivity then
-							index[fuel_cell] = fuel_cell_radioactivity
-						end
-					end
-				end
-			end
-		end
-
-		-- look for spent fuel cells
-		if recipe.ingredients then
-			for _, ingredient in pairs(recipe.ingredients) do
-				for fuel_cell, _ in pairs(prototype_table.fuel_cells) do
-	
-					if ingredient.name then ingredient_name = ingredient.name elseif ingredient[1] then ingredient_name = ingredient[1] end
-					if ingredient.amount then ingredient_amount = ingredient.amount elseif ingredient[2] then ingredient_amount = ingredient[2] end
-					if ingredient_name == "used-up-"..fuel_cell then
-						
-						fuel_cell = "used-up-"..fuel_cell
-	
-						if recipe.products then
-							for _, result in pairs(recipe.products) do
-								
-								if result.name then
-									result_name = result.name
-								elseif result[1] then
-									result_name = result[1]
-								end
-								if result.amount then
-									result_count = result.amount
-								elseif result[2] then
-									result_count = result[2]
-								end
-
-								for radioactive_item, radioactivity in pairs (prototype_table.items) do
-									if result_name == radioactive_item then
-										result_index[radioactive_item] = radioactivity*result_count/ingredient_amount
-									end
-								end
-								for radioactive_fluid, radioactivity in pairs (prototype_table.fluids) do
-									if result_name == radioactive_fluid then
-										result_index[radioactive_fluid] = radioactivity*result_count/ingredient_amount
-									end
-								end
-	
-								fuel_cell_radioactivity = OSM_local.get_radiation_level(result_index)
-									
-								if not index[fuel_cell] then
-									index[fuel_cell] = fuel_cell_radioactivity
-								elseif index[fuel_cell] <= fuel_cell_radioactivity then
-									index[fuel_cell] = fuel_cell_radioactivity
-								end
-							end
-						end
-					end
-				end
-			end
-		end
+	-- Entities
+	elseif OSM.data.entity[prototype.type] then
+		tooltip = {"", "[img=osm-rks-tooltip-radioactive] ", "[font=default-semibold][color=yellow]", {"string-name.osm-entity-tooltip"}, "[/color][/font]"}
 	end
-
-	for fuel_cell, radioactivity in pairs(index) do
-		prototype_table.items[fuel_cell] = radioactivity
-	end
-	return prototype_table
+	
+	prototype.localised_description = tooltip
 end
-	
-return local_function
+
+-- Check if player is doing fine
+function RKS.player_check(player)
+	if player and player.valid and player.character and player.character.valid then return true end
+end
+
+return RKS

@@ -1,10 +1,119 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.41
+Date: 10.01.2023
+  Bugfixes:
+    - Fixed a case where radiation shielding was applied without any actual shield
+---------------------------------------------------------------------------------------------------
+Version: 1.1.40
+Date: 03.01.2023
+  Features:
+    - Dynamic generation of radioactive entities based on mined/placed items fully implemented
+    - Potential radiological hazard sources: (complete list; * introduced in this release)
+        - Ore patches
+        - Items in player inventory
+        - Items in player trash inventory
+        - Items on player cursor
+        - Items in corpses
+        - Items on ground
+        - Items on transport belts
+        * Items on underground belts
+        * Items on linked belts
+        * Items on splitters
+        * Items on loaders
+        - Items in assembling machines
+        * Items in furnaces
+        * Items in inserters
+        * Items in linked chests
+        * Items in logistic chests
+        * Items in vehicle inventories (including fluids)
+        - Fluids in pipes
+        * Fluids in pipes to ground
+        - Fluids in storage tanks
+        * Science packs in labs
+        * Other nearby players carrying radioactive items (including nearby players inside vehicles)
+  Changes:
+    - Radiation values are now floating around real value to simulate the geiger counter up and downs (real background value is static, visual only)
+    - GUI reset on player death is now called on event "on_pre_player_died" instead of "on_player_died" (improves compatibility with other mods)
+  Info:
+    - Code optimisation
+  Bugfixes:
+    - Fixed a reset of ALL alerts caused by a wrong line of code (Well spotted! @Ray1Claw)
+    - Fixed a crash on startup caused by a wrong icon size
+    - Fixed a case where player half life would not reset upon death
+    - Fixed a memory leak that caused some UPS drops (Well spotted! @Sgamez)
+    - Radioactive ore patches now show the correct description tooltip
+---------------------------------------------------------------------------------------------------
+Version: 1.1.36
+Date: 16.11.2022
+  Changes:
+    - Lowered hazmat suit absolute radiation resistance from 3 to 0.5 (doing so prevents sudden radiation spikes when approaching radioactive stuff)
+  Bugfixes:
+    - Fixed a case where exposure value would go negative bugging the radiation GUI (visual bug)
+    - Fixed a case where radiation damage was absorbed by ordinary energy shields
+---------------------------------------------------------------------------------------------------
+Version: 1.1.35
+Date: 14.11.2022
+  Changes:
+    - Geiger counter setting is now per-player (was global)
+    - Radiation GUI visibility is now configurable with three options: (per player setting)
+        - Always on: GUI is always shown
+        - Always off: GUI is never shown
+        - Dynamic: GUI is shown only when radiological activity is detected
+    - Half life on player lasts a little longer
+    - Radioactive ore patches are slightly more radioactive
+    - Radiation damage cannot be absorbed by ordinary energy shields anymmore (this makes radiation shielding crucial in heavily irradiated areas)
+    - Log is now printed only during control stage
+    - Shielded storage tanks can be enabled/disabled via startup settings
+  Info:
+    - Code optimisation (less for loops more UPS)
+    - Changelog tidy-up
+  Bugfixes:
+    - Half-life decay is now calculated from its real value, always
+    - Exposure value in GUI now shows correctly
+    - Damage reduction is now applied correctly
+---------------------------------------------------------------------------------------------------
+Version: 1.1.31
+Date: 22.10.2022
+  Info:
+    - Corrected a misspelling in the changelog (Thanks @KiwiHawk)
+  Bugfixes:
+    - Shielded chest and shielded tank now work as intended (update 1.1.30 broke them)
+    - Fixed a desync in MP
+---------------------------------------------------------------------------------------------------
+Version: 1.1.30
+Date: 21.10.2022
+  Features:
+    - New energy shield that prevents radiation damage (research required)
+    - Radiation shield drains 1kJ of battery power for each milliBob of exposure, no power no protection!
+    - New GUI for displaying radiation and shield values (no more chat spam)
+    - Implemented support for "Amator Phasma's Nuclear"
+  Changes:
+    - Alert sprites have been changed from "virtual-signal" to "item" (prevents them from showing up among combinator's signals)
+    - Krastorio radioactivity system is now disabled automatically (don't need to run the disable command)
+  Info:
+    - All radiation values are now generated dynamically based on recipe ingredients/results
+    - Because of the aforementioned change compatibility with other mods is MUCH wider
+    - Removed radiation values from tooltips because some of them displayed wrong values due to game engine limitation (the damage applied in-game was correct though)
+---------------------------------------------------------------------------------------------------
+Version: 1.1.22
+Date: 06.09.2022
+  Bugfixes:
+    - Fixed a crash on player death in multiplayer
+---------------------------------------------------------------------------------------------------
+Version: 1.1.21
+Date: 19.04.2022
+  Changes:
+    - Added a setting to make radioactive ore patches more dangerous
+  Info:
+    - Conform with new library version
+  Bugfixes:
+    - Fixed a typo which prevented hazmat suit recipe generation
+---------------------------------------------------------------------------------------------------
 Version: 1.1.20
-Date: 08. 02. 2022
+Date: 08.02.2022
   Changes:
     - Exposure radius to radioactive source is now configurable
   Info:
-    - Complete code structure rework
     - List of radioactive objects are now logged in both data stage and control stage
     - Fuel cells radiation values are generated based on ingredients
     - Used up fuel cells radiation values are generated based on products
@@ -14,34 +123,34 @@ Date: 08. 02. 2022
     - Radioactive items in corpses cause radiation damage
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.14
-Date: 22. 01. 2022
+Date: 22.01.2022
   Info:
     - Added support for deadlock's stacked items
     - Added locales for tooltips and messages
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.13
-Date: 22. 01. 2022
+Date: 22.01.2022
   Info:
     - Added radiation values in item/fluid/entity tooltips
   Bugfixes:
     - Corrected a typo in a function
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.12
-Date: 22. 01. 2022
+Date: 22.01.2022
   Info:
     - Internal code optimisation
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.11
-Date: 21. 01. 2022
+Date: 21.01.2022
   Info:
     - Implemented dynamic check of radioactive resistance of worn armor
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.10
-Date: 20. 01. 2022
+Date: 20.01.2022
   Features:
     - Radiation damage and radiation damage decay (from complete rework of Radioactive Contamination)
-    - Geiger counter sound is played when a radiation source is within 10 meters radius (can be turned off in settings)
-    - Alert sprite starts flashing when a radiation source is within 10 meters radius
+    - Geiger counter sound is played when a radiation source is within ten meters radius (can be turned off in settings)
+    - Alert sprite starts flashing when a radiation source is within ten meters radius
     - Hazmat suit which provides some shielding from radiation when worn (reduces damage taken of 80%)
     - Shielded chest which provides complete shielding from any radioactive element contained inside of it
     - Shielded tank which provides complete shielding from any radioactive fluids contained inside of it
@@ -52,17 +161,17 @@ Date: 20. 01. 2022
         - Angels mods
         - MadClown nuclear
         - Krastorio
-    - Radiation emission applies to:
+    - Radiological hazard applies to:
         - Ore patches
         - Items in inventory
         - Items in trash inventory
         - Items in corpses
         - Items on ground
         - Items on transport belts
-        - items in containers
+        - Items in containers
         - Items in assembling machines
-        - fluids in pipes
-        - fluids in storage tanks
+        - Fluids in pipes
+        - Fluids in storage tanks
     - Alert sprites:
-        - Yellow alert: geiger counter goes off, radioactive element within 10 meters radius no damage taken
-        - Red alert: geiger counter goes off, radioactive element within 10 meters radius and damage is taken
+        - Yellow alert: geiger counter goes off, radioactive element within ten meters radius no damage taken
+        - Red alert: geiger counter goes off, radioactive element within ten meters radius and damage is taken

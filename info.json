@@ -1,6 +1,6 @@
 {
 	"name": "osm-radioactivity",
-	"version": "1.1.20",
+	"version": "1.1.41",
 	"title": "Radioactivity Kills Slowly",
 	"author": "OldSkoolMatt",
 	"homepage": "https://mods.factorio.com/mod/osm-radioactivity",
@@ -9,15 +9,17 @@
 	"dependencies":
 	[
 		"base >= 1.1.0",
-		"osm-lib >= 1.1.18",
+		"osm-lib >= 1.1.40",
 		"? bobores",
 		"? bobplates",
 		"? angelsrefining",
-		"(?) Clowns-Nuclear",
-		"(?) Clowns-AngelBob-Nuclear",
+		"? Clowns-Nuclear",
+		"? Clowns-AngelBob-Nuclear",
+		"? apm_nuclear_ldinc",
 		"(?) Krastorio2",
 		"(?) deadlock-beltboxes-loaders",
 		"(?) DeadlockStackingForBobs",
+		"(?) True-Nukes",
 		"(?) DeadlockStackingForVanilla"
 	]
 }

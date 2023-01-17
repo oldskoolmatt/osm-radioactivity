@@ -4,7 +4,7 @@
 
 local radiation_radius =
 {
-	name = "osm-rad-exposure-radius",
+	name = "osm-rks-exposure-radius",
 	type = "double-setting",
 	setting_type = "startup",
 	default_value = 15,
@@ -13,20 +13,50 @@ local radiation_radius =
 	order = "a"
 }	data:extend({radiation_radius})
 
-local print_millibobs =
+local deadly_ores =
 {
-	name = "osm-rad-print-millibobs",
+	name = "osm-rks-deadly-ores",
 	type = "bool-setting",
-	setting_type = "runtime-global",
+	setting_type = "startup",
+	default_value = false,
+	order = "b"
+}	data:extend({deadly_ores})
+
+local shielded_tank =
+{
+	name = "osm-rks-enable-shielded-tank",
+	type = "bool-setting",
+	setting_type = "startup",
 	default_value = true,
-	order = "a"
-}	data:extend({print_millibobs})
+	order = "c"
+}	data:extend({shielded_tank})
+
+------------------------------------
 
 local geiger_sound =
 {
-	name = "osm-rad-geiger-sound",
+	name = "osm-rks-geiger-sound",
 	type = "bool-setting",
-	setting_type = "runtime-global",
+	setting_type = "runtime-per-user",
 	default_value = true,
-	order = "b"
+	order = "a"
 }	data:extend({geiger_sound})
+
+local display_gui =
+{
+	name = "osm-rks-display-gui",
+	type = "string-setting",
+	setting_type = "runtime-per-user",
+	default_value = "always-on",
+	allowed_values = {"always-on", "always-off", "dynamic"},
+	order = "b"
+}	data:extend({display_gui})
+
+local move_gui =
+{
+	name = "osm-rks-move-gui",
+	type = "bool-setting",
+	setting_type = "runtime-per-user",
+	default_value = true,
+	order = "c"
+}	data:extend({move_gui})

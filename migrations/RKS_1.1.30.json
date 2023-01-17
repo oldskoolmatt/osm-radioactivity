@@ -1,0 +1,21 @@
+{
+  "recipe":
+  [
+    ["shielded-tank", "osm-rks-shielded-tank"],
+    ["shielded-chest", "osm-rks-shielded-chest"],
+    ["hazmat-suit", "osm-rks-hazmat-suit"]
+  ],
+  "item":
+  [
+    ["shielded-tank", "osm-rks-shielded-tank"],
+    ["shielded-chest", "osm-rks-shielded-chest"],
+    ["hazmat-suit", "osm-rks-hazmat-suit"]
+  ],
+  "entity":
+  [
+    ["shielded-tank", "osm-rks-shielded-tank"],
+    ["shielded-chest", "osm-rks-shielded-chest"],
+    ["hazmat-suit", "osm-rks-hazmat-suit"]
+  ]
+}
+
